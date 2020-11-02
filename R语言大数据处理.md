@@ -46,8 +46,6 @@ flights <- fread("/opt/data/flights/flights14.csv")
 flights
 ```
 
-![image-20201024124144155](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124144155.png)
-
 再读取航空公司数据集。
 
 ```R
@@ -55,7 +53,6 @@ carriers <- fread("/opt/data/flights/carrier.csv")
 carriers
 ```
 
-![image-20201024124213418](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124213418.png)
 
 ## 数据选择
 
@@ -74,7 +71,6 @@ DT
 class(DT$ID)
 ```
 
-![image-20201024124422237](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124422237.png)
 
 可以看出，与数据框不同，字符型数据变量不会默认转换为因子型。在显示出来的数据样本中，会默认显示行号与“:”。
 
@@ -103,8 +99,6 @@ flights <- fread("/opt/data/flights/flights14.csv")
 flights[origin == "JFK" & month == 6]
 ```
 
-![image-20201024124501435](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124501435.png)
-
 需要注意的是，与数据框不同
 
 - 变量名并不必须添加数据表名称前缀`flights$`，但也完全支持添加；
@@ -116,15 +110,11 @@ flights[origin == "JFK" & month == 6]
 flights[1:2]
 ```
 
-![image-20201024124522693](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124522693.png)
-
 在数据表的`i`项中调用函数`order()`按出发地（变量`origin`）顺序、目的地（变量`dest`）倒序排列。
 
 ```R
 flights[order(origin, -dest)]
 ```
-
-![image-20201024124604712](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124604712.png)
 
 ### 4.数据列的选择（使用`j`项）
 
@@ -134,23 +124,17 @@ flights[order(origin, -dest)]
 flights[1:6, arr_delay]
 ```
 
-![image-20201024124619157](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124619157.png)
-
 将变量名放在`.()`中，则返回结果为**数据表**。
 
 ```R
 flights[1:6, .(arr_delay)]
 ```
 
-![image-20201024124649279](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124649279.png)
-
 也可以在`.()`中包含多个变量名，选取航班到达延误分钟数（变量`arr_delay`）和出发延误分钟数（变量`dep_delay`），则返回包含多列的数据表。
 
 ```R
 flights[1:6, .(arr_delay, dep_delay)]
 ```
-
-![image-20201024124823222](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124823222.png)
 
 可以重新命名选取的列，这里将变量`arr_delay`和`dep_delay`重命名为`delay_arr`和`delay_dep`。
 
@@ -166,15 +150,11 @@ flights[1:6, .(delay_arr = arr_delay, delay_dep = dep_delay)]
 flights[, sum((arr_delay + dep_delay) < 0)]
 ```
 
-![image-20201024124955092](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124955092.png)
-
 在数据表的`i`项中做筛选条件，并在数据表的`j`项中调用函数`mean()`，计算航班数据集中满足筛选条件的航班的平均到达延误分钟数（变量`arr_delay`）和平均出发延误分钟数（变量`dep_delay`）。
 
 ```R
 flights[origin == "JFK" & month == 6L, .(m_arr = mean(arr_delay), m_dep = mean(dep_delay))]
 ```
-
-![image-20201024124914611](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024124914611.png)
 
 在数据表的`j`项中调用函数`length()`，计算满足筛选条件的记录数。
 
@@ -182,15 +162,11 @@ flights[origin == "JFK" & month == 6L, .(m_arr = mean(arr_delay), m_dep = mean(d
 flights[origin == "JFK" & month == 6L, length(dest)]
 ```
 
-![image-20201024125017560](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125017560.png)
-
 另一种方法是使用`.N`，即表示该分组的记录数。需要注意的是，在数据表的`j`项中没有指定输出变量名，则自动命名为`N`。
 
 ```R
 flights[origin == "JFK" & month == 6L, .N]
 ```
-
-![image-20201024125028206](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125028206.png)
 
 ## 数据聚合
 
@@ -204,23 +180,17 @@ flights <- fread("/opt/data/flights/flights14.csv")
 flights[, .N, by = origin]
 ```
 
-![image-20201024125054274](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125054274.png)
-
 也可以继续在`i`项中做筛选条件，并在数据表的`by`项中指定多个变量，计算各不同出发地（变量`origin`）、目的地（变量`dest`）组合中，航空公司代码（变量`carrier`）为“AA”的记录条数。
 
 ```R
 flights[carrier == "AA", .N, by = .(origin,dest)]
 ```
 
-![image-20201024125206175](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125206175.png)
-
 以下例子计算了航空公司代码为“AA”的航班，在各不同出发地、目的地和月份组合中，平均到达和出发延误分钟数。需要注意的是，在数据表的`j`项中没有指定输出变量名，则自动命名为`V1`和`V2`。
 
 ```R
 flights[carrier == "AA", .(mean(arr_delay), mean(dep_delay)), by = .(origin, dest, month)]
 ```
-
-![image-20201024125226206](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125226206.png)
 
 ### 2.使用`keyby`关键字
 
@@ -231,8 +201,6 @@ flights[carrier == "AA", .(mean(arr_delay), mean(dep_delay)), by = .(origin, des
 ```R
 flights[carrier == "AA", .(mean(arr_delay), mean(dep_delay)), keyby = .(origin, dest, month)]
 ```
-
-![image-20201024125246537](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125246537.png)
 
 ### 3.级联操作
 
@@ -246,7 +214,6 @@ DT <- flights[carrier == "AA", .N, by = .(origin, dest)]
 DT[order(origin, -dest)]
 ```
 
-![image-20201024125305285](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125305285.png)
 
 以上操作需要将第1步的结果存储在一个中间变量中，浪费了内存资源。
 
@@ -255,8 +222,6 @@ DT[order(origin, -dest)]
 ```R
 flights[carrier == "AA", .N, by = .(origin, dest)][order(origin, -dest)]
 ```
-
-![image-20201024125305285](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125305285.png)
 
 ## 数据引用
 
@@ -273,8 +238,6 @@ flights[carrier == "AA", .N, by = .(origin, dest)][order(origin, -dest)]
 DF <- data.frame(ID = c("b","b","b","a","a","c"), a = 1:6, b = 7:12, c = 13:18)
 DF
 ```
-
-![image-20201024125359443](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024125359443.png)
 
 在R语言3.1版本之后，
 
@@ -309,7 +272,6 @@ DT[,c("b","a") := list(1,2)]
 DT
 ```
 
-![image-20201024153558325](/Users/wangchenming/Library/Application Support/typora-user-images/image-20201024153558325.png)
 
 2. 函数形式
 
